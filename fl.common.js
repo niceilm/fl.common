@@ -111,46 +111,57 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
       }
     }
   }])
-  .factory('ModalService', ['$mdDialog', '$mdToast', '$lazyLoadHelper', function($mdDialog, $mdToast, $lazyLoadHelper) {
-    return {
-      alert: alert,
-      confirm: confirm,
-      show: show,
-      toast: toast
-
+  .provider("ModalService", function ModalServiceProvider() {
+    var options = {
+      toastHideDelay: 3000,
+      toastPosition: "top right"
     };
-    function alert(message, options) {
-      options = options || {};
-      return $mdDialog.show($mdDialog.alert()
-        .title('확인')
-        .content(message)
-        .ariaLabel(options.okLabel || '확인')
-        .ok(options.okLabel || '확인')
-        .targetEvent(options.$event));
-    }
+    this.setOptions = function(newOptions) {
+      newOptions = newOptions || {};
+      options = angular.extend(options, newOptions);
+    };
 
-    function confirm(message, options) {
-      options = options || {};
-      return $mdDialog.show($mdDialog.confirm()
-        .title('확인')
-        .content(message)
-        .ariaLabel(options.okLabel || '저장')
-        .ok(options.okLabel || '저장')
-        .cancel(options.cancelLabel || '취소')
-        .targetEvent(options.$event));
-    }
+    this.$get = ['$mdDialog', '$mdToast', '$lazyLoadHelper', function($mdDialog, $mdToast, $lazyLoadHelper) {
+      return {
+        alert: alert,
+        confirm: confirm,
+        show: show,
+        toast: toast
 
-    function show(option) {
-      return $mdDialog.show($lazyLoadHelper.makeBundle(option));
-    }
+      };
+      function alert(message, options) {
+        options = options || {};
+        return $mdDialog.show($mdDialog.alert()
+          .title('확인')
+          .content(message)
+          .ariaLabel(options.okLabel || '확인')
+          .ok(options.okLabel || '확인')
+          .targetEvent(options.$event));
+      }
 
-    function toast(message) {
-      return $mdToast.show($mdToast.simple()
-        .content(message)
-        .position("top right")
-        .hideDelay(3000));
-    }
-  }])
+      function confirm(message, options) {
+        options = options || {};
+        return $mdDialog.show($mdDialog.confirm()
+          .title('확인')
+          .content(message)
+          .ariaLabel(options.okLabel || '저장')
+          .ok(options.okLabel || '저장')
+          .cancel(options.cancelLabel || '취소')
+          .targetEvent(options.$event));
+      }
+
+      function show(option) {
+        return $mdDialog.show($lazyLoadHelper.makeBundle(option));
+      }
+
+      function toast(message) {
+        return $mdToast.show($mdToast.simple()
+          .content(message)
+          .position(options.toastPosition)
+          .hideDelay(options.toastHideDelay));
+      }
+    }];
+  })
   .factory('StateManager', ['$rootScope', '$state', function($rootScope, $state) {
     return {
       backState: backState
