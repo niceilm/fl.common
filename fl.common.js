@@ -163,11 +163,37 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
     }];
   })
   .factory('StateManager', ['$rootScope', '$state', function($rootScope, $state) {
+    var _history = [];
+    var _isFromBack = false;
+
     return {
-      backState: backState
+      backState: backState,
+      pop: pop,
+      push: push,
+      setFromBack: setFromBack,
+      isFromBack: isFromBack
     };
+
+    function isFromBack() {
+      return _isFromBack;
+    }
+
+    function setFromBack(newFromBackState) {
+      _isFromBack = newFromBackState;
+    }
+
+    function pop() {
+      return _history.pop() || {};
+    }
+
+    function push(previousState) {
+      _history.push(previousState);
+    }
+
     function backState(stateName, params) {
-      $state.go($rootScope.previousState.name || stateName, angular.extend($rootScope.previousState.params, params));
+      var previousState = pop();
+      setFromBack(true);
+      $state.go(previousState.name || stateName, previousState.params || params, {location: "replace"});
     }
   }])
   .factory('AgentManager', [function() {
@@ -220,14 +246,21 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
   }])
   .run(run);
 
-run.$inject = ['$rootScope'];
+run.$inject = ['$rootScope', 'StateManager'];
 
-function run($rootScope) {
+function run($rootScope, StateManager) {
   $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
-    $rootScope.previousState = {
-      name: from.name,
-      params: fromParams
-    };
-  });
+    if(!from || !from.name) {
+      return;
+    }
 
+    if(!StateManager.isFromBack()) {
+      StateManager.push({
+        name: from.name,
+        params: fromParams
+      });
+    } else {
+      StateManager.setFromBack(false);
+    }
+  });
 }
