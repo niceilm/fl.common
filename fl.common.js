@@ -169,10 +169,17 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
     return {
       backState: backState,
       pop: pop,
+      replace:replace,
       push: push,
       setFromBack: setFromBack,
       isFromBack: isFromBack
     };
+
+    function replace(stateName, params) {
+      pop();
+      setFromBack(true);
+      $state.go(stateName, params, {location: "replace"});
+    }
 
     function isFromBack() {
       return _isFromBack;
