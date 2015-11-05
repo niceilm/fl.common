@@ -1,7 +1,7 @@
 {
   "name": "fl.common",
   "main": "fl.common.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "authors": [
     "niceilm@naver.com"
   ],
@@ -25,7 +25,8 @@
     "angular": "^1.4.7",
     "angular-material": "^1.0.0-rc1",
     "angular-ui-router": "^0.2.15",
-    "fl.lazy": "^0.0.1"
+    "fl.lazy": "^0.0.1",
+    "ua-parser-js": "^0.7.9"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.7"
