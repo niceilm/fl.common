@@ -143,7 +143,7 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
         options = options || {};
         return $mdDialog.show($mdDialog.confirm()
           .title('확인')
-          .content(message)
+          .textContent(message)
           .ariaLabel(options.okLabel || '저장')
           .ok(options.okLabel || '저장')
           .cancel(options.cancelLabel || '취소')
