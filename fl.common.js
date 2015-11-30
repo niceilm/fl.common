@@ -133,7 +133,7 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
         options = options || {};
         return $mdDialog.show($mdDialog.alert()
           .title('확인')
-          .content(message)
+          .textContent(message)
           .ariaLabel(options.okLabel || '확인')
           .ok(options.okLabel || '확인')
           .targetEvent(options.$event));
@@ -156,7 +156,7 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
 
       function toast(message) {
         return $mdToast.show($mdToast.simple()
-          .content(message)
+          .textContent(message)
           .position(options.toastPosition)
           .hideDelay(options.toastHideDelay));
       }
