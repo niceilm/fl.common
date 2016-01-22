@@ -1,4 +1,5 @@
 angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
+  .constant("INIT_LOADING_STATE", false)
   .directive('gridResizer', ['$window', '$timeout', function($window, $timeout) {
     return {
       restrict: 'A',
@@ -113,8 +114,10 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
   }])
   .provider("ModalService", function ModalServiceProvider() {
     var options = {
-      toastHideDelay: 3000,
-      toastPosition: "top right"
+      toast: {
+        hideDelay: 3000,
+        position: "top right"
+      }
     };
     this.setOptions = function(newOptions) {
       newOptions = newOptions || {};
@@ -155,10 +158,18 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
       }
 
       function toast(message) {
-        return $mdToast.show($mdToast.simple()
-          .textContent(message)
-          .position(options.toastPosition)
-          .hideDelay(options.toastHideDelay));
+        var preset = $mdToast.simple().textContent(message);
+
+        if(options.toast.position) {
+          preset.position(options.toast.position);
+        }
+        if(options.toast.hideDelay) {
+          preset.hideDelay(options.toast.hideDelay);
+        }
+        if(options.toast.parent) {
+          preset.parent(options.toast.parent);
+        }
+        return $mdToast.show(preset);
       }
     }];
   })
@@ -169,7 +180,7 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
     return {
       backState: backState,
       pop: pop,
-      replace:replace,
+      replace: replace,
       push: push,
       setFromBack: setFromBack,
       isFromBack: isFromBack
@@ -222,9 +233,16 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
       return (new UAParser()).getResult().device.type === "mobile";
     }
   }])
-  .factory('LoadingIndicator', ['$timeout', '$rootScope', function($timeout, $rootScope) {
+  .factory('LoadingIndicator', ['$timeout', '$rootScope', 'INIT_LOADING_STATE', function($timeout, $rootScope, INIT_LOADING_STATE) {
     var timerPromise = null;
-    $rootScope.isLoading = false;
+    $rootScope.isLoading = INIT_LOADING_STATE;
+
+    return {
+      start: start,
+      stop: stop,
+      isLoading: isLoading
+    };
+
     function start() {
       $timeout.cancel(timerPromise);
       $rootScope.isLoading = true;
@@ -242,11 +260,6 @@ angular.module('fl.common', ['ngMaterial', 'ui.router', 'fl.lazy'])
       return $rootScope.isLoading;
     }
 
-    return {
-      start: start,
-      stop: stop,
-      isLoading: isLoading
-    };
   }])
   .filter('encodeURIComponent', [function() {
     return encodeURIComponent;
